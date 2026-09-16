@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Management System</title>
+</head>
+<body>
+
+    <h1>Restaurant Management System</h1>
+
+    <h2>Menu</h2>
+
+    <div>
+        <h3>Chicken Burger</h3>
+        <p>Price: $5</p>
+        <button onclick="orderFood('Chicken Burger')">Order Now</button>
+    </div>
+
+    <div>
+        <h3>Pizza</h3>
+        <p>Price: $8</p>
+        <button onclick="orderFood('Pizza')">Order Now</button>
+    </div>
+
+    <script>
+        function orderFood(food) {
+            alert(food + " ordered successfully!");
+        }
+    </script>
+
+</body>
+</html>

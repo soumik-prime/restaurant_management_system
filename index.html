@@ -3,30 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Management System</title>
+    <title>Savoria | Restaurant Management</title>
+    <style>
+        :root {
+            --ink: #20211f;
+            --muted: #74766e;
+            --cream: #f8f5ee;
+            --paper: #fffdf8;
+            --accent: #e86f51;
+            --accent-dark: #c65037;
+            --sage: #dbe5d4;
+            --line: #e8e3d9;
+            --shadow: 0 18px 45px rgba(49, 42, 31, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: var(--cream);
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+
+        button, input { font: inherit; }
+
+        .app-shell { min-height: 100vh; }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 6vw;
+            background: var(--paper);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-mark {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            color: white;
+            background: var(--accent);
+            border-radius: 50%;
+            font-size: 24px;
+        }
+        .brand strong { display: block; font-size: 22px; letter-spacing: .02em; }
+        .brand small { color: var(--muted); font-family: Arial, sans-serif; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+        .header-note { color: var(--muted); font-family: Arial, sans-serif; font-size: 13px; }
+
+        main { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 42px; max-width: 1240px; margin: 0 auto; padding: 58px 6vw; }
+        .eyebrow { color: var(--accent-dark); font-family: Arial, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+        h1 { max-width: 580px; margin: 10px 0 14px; font-size: clamp(42px, 6vw, 72px); font-weight: 400; line-height: .96; }
+        .intro { max-width: 470px; margin: 0 0 35px; color: var(--muted); font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; }
+
+        .toolbar { display: flex; gap: 12px; margin-bottom: 24px; }
+        .search { flex: 1; min-width: 0; padding: 13px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); outline-color: var(--accent); font-family: Arial, sans-serif; }
+        .filter { padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); cursor: pointer; font-family: Arial, sans-serif; }
+
+        .menu-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .menu-card { position: relative; padding: 24px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); box-shadow: var(--shadow); transition: transform .2s ease, box-shadow .2s ease; }
+        .menu-card:hover { transform: translateY(-4px); box-shadow: 0 22px 50px rgba(49, 42, 31, .13); }
+        .food-icon { display: grid; width: 58px; height: 58px; place-items: center; margin-bottom: 20px; border-radius: 16px; background: var(--sage); font-size: 30px; }
+        .menu-card h3 { margin: 0 0 8px; font-size: 23px; font-weight: 400; }
+        .menu-card p { min-height: 42px; margin: 0 0 18px; color: var(--muted); font-family: Arial, sans-serif; font-size: 13px; line-height: 1.5; }
+        .card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .price { font-size: 19px; font-weight: 700; }
+        .add-button { padding: 10px 14px; border: 0; border-radius: 6px; color: white; background: var(--accent); cursor: pointer; font-family: Arial, sans-serif; font-size: 12px; font-weight: 700; transition: background .2s ease; }
+        .add-button:hover { background: var(--accent-dark); }
+        .empty-state { grid-column: 1 / -1; padding: 34px; border: 1px dashed var(--line); color: var(--muted); text-align: center; font-family: Arial, sans-serif; }
+
+        .order-panel { align-self: start; padding: 26px; border-radius: 10px; background: var(--ink); color: white; box-shadow: var(--shadow); }
+        .order-panel h2 { margin: 0; font-size: 27px; font-weight: 400; }
+        .order-label { margin: 5px 0 25px; color: #b9b9ae; font-family: Arial, sans-serif; font-size: 12px; }
+        #cart-items { min-height: 130px; border-top: 1px solid #454640; border-bottom: 1px solid #454640; }
+        .cart-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; font-family: Arial, sans-serif; font-size: 13px; }
+        .cart-row span { color: #b9b9ae; }
+        .cart-empty { padding: 45px 0; color: #999b91; font-family: Arial, sans-serif; font-size: 13px; text-align: center; }
+        .total-row { display: flex; justify-content: space-between; padding: 18px 0 20px; font-family: Arial, sans-serif; font-size: 15px; }
+        .total-row strong { font-size: 20px; }
+        .checkout { width: 100%; padding: 14px; border: 0; border-radius: 6px; color: var(--ink); background: #f6c36a; cursor: pointer; font-family: Arial, sans-serif; font-size: 13px; font-weight: 700; }
+        .checkout:disabled { cursor: not-allowed; opacity: .45; }
+        .order-status { min-height: 18px; margin: 14px 0 0; color: #f6c36a; font-family: Arial, sans-serif; font-size: 12px; text-align: center; }
+
+        @media (max-width: 800px) {
+            header { padding: 18px 5vw; }
+            .header-note { display: none; }
+            main { grid-template-columns: 1fr; gap: 34px; padding: 42px 5vw; }
+            .order-panel { order: -1; }
+        }
+
+        @media (max-width: 520px) {
+            .menu-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 48px; }
+            .toolbar { flex-direction: column; }
+            .filter { min-height: 44px; }
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Restaurant Management System</h1>
+    <div class="app-shell">
+        <header>
+            <div class="brand">
+                <div class="brand-mark">S</div>
+                <div><strong>Savoria</strong><small>Kitchen &amp; Table</small></div>
+            </div>
+            <div class="header-note">Open today · 11:00 AM - 11:00 PM</div>
+        </header>
 
-    <h2>Menu</h2>
+        <main>
+            <section class="menu-section">
+                <div class="eyebrow">Today's menu</div>
+                <h1>Good food, made for good moments.</h1>
+                <p class="intro">Fresh ingredients, familiar comfort, and a little something unexpected. Choose your favorites and we will handle the rest.</p>
+                <div class="toolbar">
+                    <input class="search" id="search-input" type="search" placeholder="Search the menu..." aria-label="Search menu">
+                    <select class="filter" id="category-filter" aria-label="Filter menu category">
+                        <option value="all">All items</option>
+                        <option value="main">Mains</option>
+                        <option value="side">Sides</option>
+                        <option value="drink">Drinks</option>
+                    </select>
+                </div>
+                <div class="menu-grid" id="menu-grid"></div>
+            </section>
 
-    <div>
-        <h3>Chicken Burger</h3>
-        <p>Price: $5</p>
-        <button onclick="orderFood('Chicken Burger')">Order Now</button>
-    </div>
-
-    <div>
-        <h3>Pizza</h3>
-        <p>Price: $8</p>
-        <button onclick="orderFood('Pizza')">Order Now</button>
+            <aside class="order-panel">
+                <h2>Your order</h2>
+                <p class="order-label" id="item-count">0 items selected</p>
+                <div id="cart-items"><div class="cart-empty">Your order is waiting for something delicious.</div></div>
+                <div class="total-row"><span>Total</span><strong id="total-price">$0.00</strong></div>
+                <button class="checkout" id="checkout-button" disabled>Place order</button>
+                <div class="order-status" id="order-status" role="status"></div>
+            </aside>
+        </main>
     </div>
 
     <script>
-        function orderFood(food) {
-            alert(food + " ordered successfully!");
+        const menu = [
+            { name: 'Chicken Burger', price: 5, category: 'main', icon: '🍔', description: 'Crispy chicken, lettuce, and house sauce.' },
+            { name: 'Garden Pizza', price: 8, category: 'main', icon: '🍕', description: 'Roasted vegetables, mozzarella, and basil.' },
+            { name: 'Truffle Fries', price: 4, category: 'side', icon: '🍟', description: 'Golden fries with parmesan and truffle oil.' },
+            { name: 'Iced Lemon Tea', price: 3, category: 'drink', icon: '🍋', description: 'Freshly brewed tea with lemon and mint.' }
+        ];
+        const cart = {};
+        const menuGrid = document.getElementById('menu-grid');
+
+        function renderMenu() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const category = document.getElementById('category-filter').value;
+            const visibleItems = menu.filter(item => item.name.toLowerCase().includes(search) && (category === 'all' || item.category === category));
+            menuGrid.innerHTML = visibleItems.length ? visibleItems.map(item => `
+                <article class="menu-card">
+                    <div class="food-icon" aria-hidden="true">${item.icon}</div>
+                    <h3>${item.name}</h3>
+                    <p>${item.description}</p>
+                    <div class="card-bottom"><span class="price">$${item.price.toFixed(2)}</span><button class="add-button" onclick="addToCart('${item.name}')">+ Add</button></div>
+                </article>
+            `).join('') : '<div class="empty-state">No menu items match your search.</div>';
         }
+
+        function addToCart(name) {
+            cart[name] = (cart[name] || 0) + 1;
+            renderCart();
+        }
+
+        function renderCart() {
+            const entries = Object.entries(cart);
+            const totalItems = entries.reduce((sum, [, quantity]) => sum + quantity, 0);
+            const total = entries.reduce((sum, [name, quantity]) => sum + menu.find(item => item.name === name).price * quantity, 0);
+            document.getElementById('item-count').textContent = `${totalItems} item${totalItems === 1 ? '' : 's'} selected`;
+            document.getElementById('total-price').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('checkout-button').disabled = totalItems === 0;
+            document.getElementById('cart-items').innerHTML = entries.length ? entries.map(([name, quantity]) => {
+                const item = menu.find(menuItem => menuItem.name === name);
+                return `<div class="cart-row"><span>${quantity} × ${name}</span><strong>$${(item.price * quantity).toFixed(2)}</strong></div>`;
+            }).join('') : '<div class="cart-empty">Your order is waiting for something delicious.</div>';
+        }
+
+        document.getElementById('search-input').addEventListener('input', renderMenu);
+        document.getElementById('category-filter').addEventListener('change', renderMenu);
+        document.getElementById('checkout-button').addEventListener('click', () => {
+            document.getElementById('order-status').textContent = 'Order received! We are preparing it now.';
+        });
+        renderMenu();
     </script>
 
 </body>

@@ -1,19 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@config "../tailwind.config.js";
+@import "tailwindcss";
 
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: #F6F1E8;
-  color: #1E1A16;
+  background-color: #f6f1e8;
+  color: #1e1a16;
 }
 
 ::selection {
-  background-color: #E3A23C;
-  color: #1E1A16;
+  background-color: #e3a23c;
+  color: #1e1a16;
 }
 
 .focus-ring {

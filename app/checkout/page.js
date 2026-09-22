@@ -12,7 +12,6 @@ const CART_KEY = "rms_cart";
 export default function CheckoutPage() {
   const router = useRouter();
   const [items, setItems] = useState([]);
-  const [cart, setCart] = useState({});
   const [loading, setLoading] = useState(true);
   const [tableNumber, setTableNumber] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("ONLINE");
@@ -20,15 +19,16 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    let savedCart = {};
+  const [cart, setCart] = useState(() => {
+    if (typeof window === "undefined") return {};
     try {
-      savedCart = JSON.parse(sessionStorage.getItem(CART_KEY) || "{}");
+      return JSON.parse(sessionStorage.getItem(CART_KEY) || "{}");
     } catch {
-      savedCart = {};
+      return {};
     }
-    setCart(savedCart);
+  });
 
+  useEffect(() => {
     fetch("/api/menu")
       .then((r) => r.json())
       .then((data) => {
@@ -38,7 +38,10 @@ export default function CheckoutPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  const itemsById = useMemo(() => new Map(items.map((i) => [i.id, i])), [items]);
+  const itemsById = useMemo(
+    () => new Map(items.map((i) => [i.id, i])),
+    [items],
+  );
   const cartEntries = Object.entries(cart).filter(([, qty]) => qty > 0);
   const total = cartEntries.reduce((sum, [id, qty]) => {
     const item = itemsById.get(Number(id));
@@ -58,8 +61,14 @@ export default function CheckoutPage() {
       return;
     }
     if (paymentMethod === "ONLINE") {
-      if (card.number.replace(/\s/g, "").length < 12 || !card.expiry || card.cvc.length < 3) {
-        setError("Enter valid card details, or choose Pay on completion instead.");
+      if (
+        card.number.replace(/\s/g, "").length < 12 ||
+        !card.expiry ||
+        card.cvc.length < 3
+      ) {
+        setError(
+          "Enter valid card details, or choose Pay on completion instead.",
+        );
         return;
       }
     }
@@ -72,7 +81,10 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           table_number: tableNumber.trim(),
           payment_method: paymentMethod,
-          items: cartEntries.map(([id, qty]) => ({ menu_item_id: Number(id), quantity: qty })),
+          items: cartEntries.map(([id, qty]) => ({
+            menu_item_id: Number(id),
+            quantity: qty,
+          })),
         }),
       });
       const data = await res.json();
@@ -84,7 +96,9 @@ export default function CheckoutPage() {
       sessionStorage.removeItem(CART_KEY);
       router.push(`/track/${data.order.id}?token=${data.order.tracking_token}`);
     } catch {
-      setError("Something went wrong. Please check your connection and try again.");
+      setError(
+        "Something went wrong. Please check your connection and try again.",
+      );
       setSubmitting(false);
     }
   }
@@ -92,8 +106,12 @@ export default function CheckoutPage() {
   if (!loading && cartEntries.length === 0) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
-        <h1 className="font-display text-2xl text-char-900">Your order is empty</h1>
-        <p className="text-char-700/70 mt-2">Add something from the menu before checking out.</p>
+        <h1 className="font-display text-2xl text-char-900">
+          Your order is empty
+        </h1>
+        <p className="text-char-700/70 mt-2">
+          Add something from the menu before checking out.
+        </p>
         <Link
           href="/menu"
           className="focus-ring mt-6 rounded-full bg-char-900 text-linen px-6 py-3 font-medium hover:bg-char-800"
@@ -109,20 +127,30 @@ export default function CheckoutPage() {
       <Header />
 
       <div className="max-w-xl mx-auto px-5 pt-8">
-        <Link href="/menu" className="text-sm text-char-700/70 hover:text-char-900">
+        <Link
+          href="/menu"
+          className="text-sm text-char-700/70 hover:text-char-900"
+        >
           ← Back to menu
         </Link>
         <h1 className="font-display text-3xl text-char-900 mt-4">Checkout</h1>
 
         <section className="mt-8">
-          <h2 className="text-sm font-medium text-char-700/70 uppercase tracking-wide">Order summary</h2>
+          <h2 className="text-sm font-medium text-char-700/70 uppercase tracking-wide">
+            Order summary
+          </h2>
           <ul className="mt-3 divide-y divide-char-900/10 border-y border-char-900/10">
             {cartEntries.map(([id, qty]) => {
               const item = itemsById.get(Number(id));
               if (!item) return null;
               return (
-                <li key={id} className="flex justify-between py-3 text-char-900">
-                  <span>{item.name} × {qty}</span>
+                <li
+                  key={id}
+                  className="flex justify-between py-3 text-char-900"
+                >
+                  <span>
+                    {item.name} × {qty}
+                  </span>
                   <span>{formatMoney(item.price * qty)}</span>
                 </li>
               );
@@ -136,7 +164,10 @@ export default function CheckoutPage() {
 
         <form onSubmit={placeOrder} className="mt-10 space-y-8">
           <div>
-            <label htmlFor="table" className="block text-sm font-medium text-char-700/70 uppercase tracking-wide mb-2">
+            <label
+              htmlFor="table"
+              className="block text-sm font-medium text-char-700/70 uppercase tracking-wide mb-2"
+            >
               Table number
             </label>
             <input
@@ -171,7 +202,9 @@ export default function CheckoutPage() {
                   onChange={() => setPaymentMethod("ON_COMPLETION")}
                   className="accent-char-900"
                 />
-                <span className="text-char-900">Pay when my order is served</span>
+                <span className="text-char-900">
+                  Pay when my order is served
+                </span>
               </label>
             </div>
 
@@ -209,7 +242,9 @@ export default function CheckoutPage() {
             disabled={submitting}
             className="focus-ring w-full rounded-full bg-char-900 text-linen py-3.5 font-medium hover:bg-char-800 disabled:opacity-50 transition-colors"
           >
-            {submitting ? "Placing order…" : `Place order · ${formatMoney(total)}`}
+            {submitting
+              ? "Placing order…"
+              : `Place order · ${formatMoney(total)}`}
           </button>
         </form>
       </div>

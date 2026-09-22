@@ -15,7 +15,14 @@ export default function MenuPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [cart, setCart] = useState({}); // { [menuItemId]: quantity }
+  const [cart, setCart] = useState(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      return JSON.parse(sessionStorage.getItem(CART_KEY) || "{}");
+    } catch {
+      return {};
+    }
+  });
   const [cartOpen, setCartOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -31,13 +38,6 @@ export default function MenuPage() {
         setError("Couldn't load the menu. Please refresh.");
         setLoading(false);
       });
-
-    try {
-      const saved = JSON.parse(sessionStorage.getItem(CART_KEY) || "{}");
-      setCart(saved);
-    } catch {
-      // ignore malformed cart
-    }
   }, []);
 
   useEffect(() => {
@@ -52,7 +52,8 @@ export default function MenuPage() {
   const filteredItems = useMemo(() => {
     const term = search.trim().toLowerCase();
     return items.filter((item) => {
-      const matchesCategory = activeCategory === "All" || item.category === activeCategory;
+      const matchesCategory =
+        activeCategory === "All" || item.category === activeCategory;
       const matchesSearch =
         !term ||
         item.name.toLowerCase().includes(term) ||
@@ -61,7 +62,10 @@ export default function MenuPage() {
     });
   }, [items, search, activeCategory]);
 
-  const itemsById = useMemo(() => new Map(items.map((i) => [i.id, i])), [items]);
+  const itemsById = useMemo(
+    () => new Map(items.map((i) => [i.id, i])),
+    [items],
+  );
 
   const cartEntries = Object.entries(cart).filter(([, qty]) => qty > 0);
   const cartCount = cartEntries.reduce((sum, [, qty]) => sum + qty, 0);
@@ -107,8 +111,12 @@ export default function MenuPage() {
       />
 
       <div className="max-w-6xl mx-auto px-5 pt-8 flex-1 w-full">
-        <h1 className="font-display text-3xl text-char-900">Today's menu</h1>
-        <p className="text-char-700/70 mt-1">Tap a dish to add it to your order.</p>
+        <h1 className="font-display text-3xl text-char-900">
+          Today&apos;s menu
+        </h1>
+        <p className="text-char-700/70 mt-1">
+          Tap a dish to add it to your order.
+        </p>
 
         {!loading && !error && items.length > 0 && (
           <div className="mt-6 space-y-4">
@@ -140,12 +148,20 @@ export default function MenuPage() {
         {error && <p className="mt-10 text-brick-600">{error}</p>}
 
         {!loading && !error && items.length === 0 && (
-          <p className="mt-10 text-char-700/60">No items are available right now. Please check with staff.</p>
+          <p className="mt-10 text-char-700/60">
+            No items are available right now. Please check with staff.
+          </p>
         )}
 
-        {!loading && !error && items.length > 0 && filteredItems.length === 0 && (
-          <p className="mt-10 text-char-700/60">No dishes match "{search}". Try another search or category.</p>
-        )}
+        {!loading &&
+          !error &&
+          items.length > 0 &&
+          filteredItems.length === 0 && (
+            <p className="mt-10 text-char-700/60">
+              No dishes match &quot;{search}&quot;. Try another search or
+              category.
+            </p>
+          )}
 
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.map((item) => (
@@ -165,24 +181,34 @@ export default function MenuPage() {
               <div className="p-4 flex flex-col flex-1">
                 <div className="flex items-start gap-2">
                   <VegBadge isVeg={!!item.is_veg} />
-                  <p className="font-medium text-char-900 leading-snug">{item.name}</p>
+                  <p className="font-medium text-char-900 leading-snug">
+                    {item.name}
+                  </p>
                 </div>
                 {item.description && (
-                  <p className="text-sm text-char-700/70 mt-1 line-clamp-2">{item.description}</p>
+                  <p className="text-sm text-char-700/70 mt-1 line-clamp-2">
+                    {item.description}
+                  </p>
                 )}
                 <div className="flex items-center justify-between mt-3 pt-1">
-                  <span className="text-ember-600 font-medium">{formatMoney(item.price)}</span>
+                  <span className="text-ember-600 font-medium">
+                    {formatMoney(item.price)}
+                  </span>
 
                   {cart[item.id] ? (
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => setQty(item.id, (cart[item.id] || 0) - 1)}
+                        onClick={() =>
+                          setQty(item.id, (cart[item.id] || 0) - 1)
+                        }
                         className="focus-ring w-8 h-8 rounded-full border border-char-900/20 text-char-900 hover:border-char-900/50"
                         aria-label={`Remove one ${item.name}`}
                       >
                         −
                       </button>
-                      <span className="w-5 text-center font-medium">{cart[item.id]}</span>
+                      <span className="w-5 text-center font-medium">
+                        {cart[item.id]}
+                      </span>
                       <button
                         onClick={() => addItem(item.id)}
                         className="focus-ring w-8 h-8 rounded-full border border-char-900/20 text-char-900 hover:border-char-900/50"
@@ -214,7 +240,10 @@ export default function MenuPage() {
             onClick={goToCheckout}
             className="focus-ring w-full max-w-6xl mx-auto flex items-center justify-between px-5 py-4"
           >
-            <span className="font-medium">{cartCount} item{cartCount > 1 ? "s" : ""} · {formatMoney(cartTotal)}</span>
+            <span className="font-medium">
+              {cartCount} item{cartCount > 1 ? "s" : ""} ·{" "}
+              {formatMoney(cartTotal)}
+            </span>
             <span className="font-medium">Checkout →</span>
           </button>
         </div>
@@ -222,25 +251,38 @@ export default function MenuPage() {
 
       {cartOpen && (
         <div className="fixed inset-0 z-20 flex justify-end">
-          <div className="absolute inset-0 bg-char-900/40" onClick={() => setCartOpen(false)} />
+          <div
+            className="absolute inset-0 bg-char-900/40"
+            onClick={() => setCartOpen(false)}
+          />
           <div className="relative w-full max-w-sm bg-linen h-full shadow-xl flex flex-col">
             <div className="flex items-center justify-between px-5 py-4 border-b border-char-900/10">
               <h2 className="font-display text-xl text-char-900">Your order</h2>
-              <button onClick={() => setCartOpen(false)} className="focus-ring text-char-700/70 hover:text-char-900">
+              <button
+                onClick={() => setCartOpen(false)}
+                className="focus-ring text-char-700/70 hover:text-char-900"
+              >
                 Close
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-5 py-4">
-              {cartEntries.length === 0 && <p className="text-char-700/60">Nothing added yet.</p>}
+              {cartEntries.length === 0 && (
+                <p className="text-char-700/60">Nothing added yet.</p>
+              )}
               <ul className="space-y-4">
                 {cartEntries.map(([id, qty]) => {
                   const item = itemsById.get(Number(id));
                   if (!item) return null;
                   return (
-                    <li key={id} className="flex items-center justify-between gap-3">
+                    <li
+                      key={id}
+                      className="flex items-center justify-between gap-3"
+                    >
                       <div>
                         <p className="font-medium text-char-900">{item.name}</p>
-                        <p className="text-sm text-char-700/70">{formatMoney(item.price)} × {qty}</p>
+                        <p className="text-sm text-char-700/70">
+                          {formatMoney(item.price)} × {qty}
+                        </p>
                       </div>
                       <div className="flex items-center gap-2">
                         <button

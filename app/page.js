@@ -12,18 +12,27 @@ export const dynamic = "force-dynamic";
 
 // Show sections in the order a meal is eaten; any other category the manager
 // invents comes after these, alphabetically.
-const CATEGORY_ORDER = ["Starter", "Main Course", "Grill", "Dessert", "Beverage"];
+const CATEGORY_ORDER = [
+  "Starter",
+  "Main Course",
+  "Grill",
+  "Dessert",
+  "Beverage",
+];
 
 async function loadMenu() {
   try {
     const items = await query(
       `SELECT id, name, description, price, category, image_url, is_veg, is_featured
        FROM menu_items
-       WHERE is_available = 1`
+       WHERE is_available = 1`,
     );
     return { items, failed: false };
   } catch (err) {
-    console.error("Landing page: could not load the menu from the database:", err);
+    console.error(
+      "Landing page: could not load the menu from the database:",
+      err,
+    );
     return { items: [], failed: true };
   }
 }
@@ -46,7 +55,7 @@ function groupByCategory(items) {
       category,
       // Popular dishes first, then alphabetical
       items: [...list].sort(
-        (a, b) => b.is_featured - a.is_featured || a.name.localeCompare(b.name)
+        (a, b) => b.is_featured - a.is_featured || a.name.localeCompare(b.name),
       ),
     }));
 }
@@ -66,12 +75,18 @@ function DishCard({ item }) {
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-start gap-2">
           <VegBadge isVeg={!!item.is_veg} />
-          <h3 className="font-medium text-char-900 leading-snug">{item.name}</h3>
+          <h3 className="font-medium text-char-900 leading-snug">
+            {item.name}
+          </h3>
         </div>
         {item.description && (
-          <p className="text-sm text-char-700/70 mt-1 line-clamp-2">{item.description}</p>
+          <p className="text-sm text-char-700/70 mt-1 line-clamp-2">
+            {item.description}
+          </p>
         )}
-        <p className="mt-auto pt-3 text-ember-600 font-medium">{formatMoney(item.price)}</p>
+        <p className="mt-auto pt-3 text-ember-600 font-medium">
+          {formatMoney(item.price)}
+        </p>
       </div>
     </article>
   );
@@ -87,12 +102,14 @@ export default async function HomePage() {
 
       {/* Hero */}
       <section className="flex flex-col items-center px-6 pt-16 pb-12 sm:pt-20 text-center">
-        <span className="text-ember-600 font-medium tracking-wide mb-4">MeetPoint</span>
+        <span className="text-ember-600 font-medium tracking-wide mb-4">
+          MeetPoint
+        </span>
         <h1 className="font-display text-5xl sm:text-6xl leading-[1.05] text-char-900 max-w-2xl">
           Order from your table, watch it come together.
         </h1>
         <p className="mt-5 text-char-700/80 max-w-md text-lg">
-          Browse today's menu, send your order straight to the kitchen, and
+          Browse today&apos;s menu, send your order straight to the kitchen, and
           follow it from pan to plate — no app to install.
         </p>
 
@@ -115,13 +132,18 @@ export default async function HomePage() {
       {/* Food items */}
       <section id="menu" className="max-w-6xl mx-auto w-full px-5 scroll-mt-20">
         <div className="text-center">
-          <h2 className="font-display text-3xl text-char-900">What's cooking today</h2>
-          <p className="text-char-700/70 mt-1">Fresh from our kitchen — ready when you are.</p>
+          <h2 className="font-display text-3xl text-char-900">
+            What&apos;s cooking today
+          </h2>
+          <p className="text-char-700/70 mt-1">
+            Fresh from our kitchen — ready when you are.
+          </p>
         </div>
 
         {failed && (
           <p className="mt-10 text-center text-brick-600">
-            We couldn't load the menu just now. Please refresh, or ask a member of staff.
+            We couldn&apos;t load the menu just now. Please refresh, or ask a
+            member of staff.
           </p>
         )}
 
@@ -132,7 +154,10 @@ export default async function HomePage() {
         )}
 
         {sections.length > 1 && (
-          <nav aria-label="Menu categories" className="mt-6 flex flex-wrap justify-center gap-2">
+          <nav
+            aria-label="Menu categories"
+            className="mt-6 flex flex-wrap justify-center gap-2"
+          >
             {sections.map((section, index) => (
               <a
                 key={section.category}
@@ -146,11 +171,18 @@ export default async function HomePage() {
         )}
 
         {sections.map((section, index) => (
-          <div key={section.category} id={`category-${index}`} className="mt-12 scroll-mt-20">
+          <div
+            key={section.category}
+            id={`category-${index}`}
+            className="mt-12 scroll-mt-20"
+          >
             <div className="flex items-baseline gap-3 mb-5">
-              <h2 className="font-display text-2xl text-char-900">{section.category}</h2>
+              <h2 className="font-display text-2xl text-char-900">
+                {section.category}
+              </h2>
               <span className="text-sm text-char-700/50">
-                {section.items.length} {section.items.length === 1 ? "dish" : "dishes"}
+                {section.items.length}{" "}
+                {section.items.length === 1 ? "dish" : "dishes"}
               </span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -164,7 +196,9 @@ export default async function HomePage() {
         {sections.length > 0 && (
           <div className="mt-14 rounded-2xl bg-char-900 text-linen px-6 py-10 text-center">
             <h2 className="font-display text-2xl">Found something you like?</h2>
-            <p className="mt-2 text-linen/70">Pick your dishes and send them straight to the kitchen.</p>
+            <p className="mt-2 text-linen/70">
+              Pick your dishes and send them straight to the kitchen.
+            </p>
             <Link
               href="/menu"
               className="focus-ring mt-6 inline-flex items-center justify-center rounded-full bg-linen text-char-900 px-8 py-3 font-medium hover:bg-white transition-colors"

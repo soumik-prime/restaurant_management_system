@@ -4,7 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 import RoleGate from "../../components/RoleGate";
 import DashboardHeader from "../../components/DashboardHeader";
 
-const EMPTY_FORM = { id: null, name: "", email: "", password: "", role: "staff" };
+const EMPTY_FORM = {
+  id: null,
+  name: "",
+  email: "",
+  password: "",
+  role: "staff",
+};
 
 function AccountsManager() {
   const [users, setUsers] = useState([]);
@@ -20,6 +26,7 @@ function AccountsManager() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, [load]);
 
@@ -30,7 +37,13 @@ function AccountsManager() {
   }
 
   function startEdit(user) {
-    setForm({ id: user.id, name: user.name, email: user.email, password: "", role: user.role });
+    setForm({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      password: "",
+      role: user.role,
+    });
     setShowForm(true);
     setError("");
   }
@@ -109,19 +122,26 @@ function AccountsManager() {
               <tr key={u.id}>
                 <td className="px-4 py-3 text-char-900">{u.name}</td>
                 <td className="px-4 py-3 text-char-700/80">{u.email}</td>
-                <td className="px-4 py-3 text-char-700/80 capitalize">{u.role}</td>
+                <td className="px-4 py-3 text-char-700/80 capitalize">
+                  {u.role}
+                </td>
                 <td className="px-4 py-3">
                   <button
                     onClick={() => toggleActive(u)}
                     className={`focus-ring rounded-full px-3 py-1 text-xs font-medium ${
-                      u.is_active ? "bg-olive-500/15 text-olive-600" : "bg-brick-500/15 text-brick-600"
+                      u.is_active
+                        ? "bg-olive-500/15 text-olive-600"
+                        : "bg-brick-500/15 text-brick-600"
                     }`}
                   >
                     {u.is_active ? "Active" : "Deactivated"}
                   </button>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => startEdit(u)} className="focus-ring text-sm text-char-900 hover:underline">
+                  <button
+                    onClick={() => startEdit(u)}
+                    className="focus-ring text-sm text-char-900 hover:underline"
+                  >
                     Edit
                   </button>
                 </td>
@@ -129,7 +149,10 @@ function AccountsManager() {
             ))}
             {users.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-char-700/50">
+                <td
+                  colSpan={5}
+                  className="px-4 py-8 text-center text-char-700/50"
+                >
                   No manager or staff accounts yet.
                 </td>
               </tr>
@@ -140,13 +163,21 @@ function AccountsManager() {
 
       {showForm && (
         <div className="fixed inset-0 z-20 flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-char-900/40" onClick={() => setShowForm(false)} />
-          <form onSubmit={saveUser} className="relative bg-linen rounded-lg shadow-xl max-w-sm w-full p-6 space-y-4">
+          <div
+            className="absolute inset-0 bg-char-900/40"
+            onClick={() => setShowForm(false)}
+          />
+          <form
+            onSubmit={saveUser}
+            className="relative bg-linen rounded-lg shadow-xl max-w-sm w-full p-6 space-y-4"
+          >
             <h2 className="font-display text-xl text-char-900">
               {form.id ? "Edit account" : "New account"}
             </h2>
             <div>
-              <label className="block text-sm font-medium text-char-700/70 mb-1">Name</label>
+              <label className="block text-sm font-medium text-char-700/70 mb-1">
+                Name
+              </label>
               <input
                 required
                 value={form.name}
@@ -156,7 +187,9 @@ function AccountsManager() {
             </div>
             {!form.id && (
               <div>
-                <label className="block text-sm font-medium text-char-700/70 mb-1">Email</label>
+                <label className="block text-sm font-medium text-char-700/70 mb-1">
+                  Email
+                </label>
                 <input
                   required
                   type="email"
@@ -179,7 +212,9 @@ function AccountsManager() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-char-700/70 mb-1">Role</label>
+              <label className="block text-sm font-medium text-char-700/70 mb-1">
+                Role
+              </label>
               <select
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}

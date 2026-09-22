@@ -7,9 +7,24 @@ import StatusBadge from "../../components/StatusBadge";
 import { formatMoney } from "../../lib/format";
 
 const COLUMNS = [
-  { status: "CONFIRMED", title: "Confirmed", action: "PREPARING", actionLabel: "Start preparing" },
-  { status: "PREPARING", title: "Preparing", action: "READY", actionLabel: "Mark ready" },
-  { status: "READY", title: "Ready to serve", action: "SERVED", actionLabel: "Mark served" },
+  {
+    status: "CONFIRMED",
+    title: "Confirmed",
+    action: "PREPARING",
+    actionLabel: "Start preparing",
+  },
+  {
+    status: "PREPARING",
+    title: "Preparing",
+    action: "READY",
+    actionLabel: "Mark ready",
+  },
+  {
+    status: "READY",
+    title: "Ready to serve",
+    action: "SERVED",
+    actionLabel: "Mark served",
+  },
 ];
 
 function StaffDashboard() {
@@ -28,6 +43,7 @@ function StaffDashboard() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
     const interval = setInterval(load, 5000);
     return () => clearInterval(interval);
@@ -69,7 +85,9 @@ function StaffDashboard() {
             <div key={col.status}>
               <h2 className="font-display text-lg text-char-900 mb-3 flex items-center justify-between">
                 {col.title}
-                <span className="text-sm font-body text-char-700/50">{colOrders.length}</span>
+                <span className="text-sm font-body text-char-700/50">
+                  {colOrders.length}
+                </span>
               </h2>
               <div className="space-y-3">
                 {colOrders.length === 0 && (
@@ -78,18 +96,26 @@ function StaffDashboard() {
                   </p>
                 )}
                 {colOrders.map((order) => (
-                  <div key={order.id} className="rounded-lg border border-char-900/15 bg-white px-4 py-3">
+                  <div
+                    key={order.id}
+                    className="rounded-lg border border-char-900/15 bg-white px-4 py-3"
+                  >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-char-900">Table {order.table_number}</span>
+                      <span className="font-medium text-char-900">
+                        Table {order.table_number}
+                      </span>
                       <StatusBadge status={order.status} />
                     </div>
                     <ul className="mt-2 text-sm text-char-700/80 space-y-0.5">
                       {order.items.map((it) => (
-                        <li key={it.id}>{it.quantity}× {it.item_name}</li>
+                        <li key={it.id}>
+                          {it.quantity}× {it.item_name}
+                        </li>
                       ))}
                     </ul>
                     <p className="text-xs text-char-700/50 mt-2">
-                      #{order.id} · {formatMoney(order.total)} · {order.payment_status === "PAID" ? "Paid" : "Pay later"}
+                      #{order.id} · {formatMoney(order.total)} ·{" "}
+                      {order.payment_status === "PAID" ? "Paid" : "Pay later"}
                     </p>
                     <button
                       onClick={() => advance(order, col.action)}

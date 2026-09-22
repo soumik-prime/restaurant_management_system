@@ -27,6 +27,7 @@ function ManagerDashboard() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
     const interval = setInterval(load, 6000);
     return () => clearInterval(interval);
@@ -36,8 +37,8 @@ function ManagerDashboard() {
     filter === "ACTIVE"
       ? orders.filter((o) => !["SERVED", "CANCELLED"].includes(o.status))
       : filter === "ALL"
-      ? orders
-      : orders.filter((o) => o.status === filter);
+        ? orders
+        : orders.filter((o) => o.status === filter);
 
   async function confirmCancel() {
     if (!cancelTarget) return;
@@ -47,7 +48,10 @@ function ManagerDashboard() {
       const res = await fetch(`/api/orders/${cancelTarget.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "CANCELLED", reason: reason || "Item no longer available" }),
+        body: JSON.stringify({
+          status: "CANCELLED",
+          reason: reason || "Item no longer available",
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -104,11 +108,17 @@ function ManagerDashboard() {
             {visibleOrders.map((order) => (
               <tr key={order.id}>
                 <td className="px-4 py-3 text-char-900">#{order.id}</td>
-                <td className="px-4 py-3 text-char-900">{order.table_number}</td>
-                <td className="px-4 py-3 text-char-700/80">
-                  {order.items.map((it) => `${it.quantity}× ${it.item_name}`).join(", ")}
+                <td className="px-4 py-3 text-char-900">
+                  {order.table_number}
                 </td>
-                <td className="px-4 py-3 text-char-900">{formatMoney(order.total)}</td>
+                <td className="px-4 py-3 text-char-700/80">
+                  {order.items
+                    .map((it) => `${it.quantity}× ${it.item_name}`)
+                    .join(", ")}
+                </td>
+                <td className="px-4 py-3 text-char-900">
+                  {formatMoney(order.total)}
+                </td>
                 <td className="px-4 py-3">
                   <StatusBadge status={order.status} />
                 </td>
@@ -129,7 +139,10 @@ function ManagerDashboard() {
             ))}
             {visibleOrders.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-char-700/50">
+                <td
+                  colSpan={7}
+                  className="px-4 py-8 text-center text-char-700/50"
+                >
                   No orders here.
                 </td>
               </tr>
@@ -140,13 +153,17 @@ function ManagerDashboard() {
 
       {cancelTarget && (
         <div className="fixed inset-0 z-20 flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-char-900/40" onClick={() => setCancelTarget(null)} />
+          <div
+            className="absolute inset-0 bg-char-900/40"
+            onClick={() => setCancelTarget(null)}
+          />
           <div className="relative bg-linen rounded-lg shadow-xl max-w-sm w-full p-6">
             <h2 className="font-display text-xl text-char-900">
               Cancel order #{cancelTarget.id}?
             </h2>
             <p className="text-sm text-char-700/70 mt-1">
-              Table {cancelTarget.table_number} will be notified with the reason below.
+              Table {cancelTarget.table_number} will be notified with the reason
+              below.
             </p>
             <textarea
               value={reason}
@@ -185,7 +202,10 @@ export default function ManagerPage() {
           <DashboardHeader
             title="MeetPoint · Manager"
             user={user}
-            links={[{ href: "/manager", label: "Orders" }, { href: "/manager/menu", label: "Menu" }]}
+            links={[
+              { href: "/manager", label: "Orders" },
+              { href: "/manager/menu", label: "Menu" },
+            ]}
           />
           <ManagerDashboard />
         </main>

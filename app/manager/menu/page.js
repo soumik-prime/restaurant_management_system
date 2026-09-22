@@ -31,6 +31,7 @@ function MenuManager() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, [load]);
 
@@ -163,7 +164,9 @@ function MenuManager() {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-char-700/80">{item.category}</td>
-                <td className="px-4 py-3 text-char-900">{formatMoney(item.price)}</td>
+                <td className="px-4 py-3 text-char-900">
+                  {formatMoney(item.price)}
+                </td>
                 <td className="px-4 py-3">
                   <button
                     onClick={() => toggleAvailability(item)}
@@ -177,10 +180,16 @@ function MenuManager() {
                   </button>
                 </td>
                 <td className="px-4 py-3 text-right space-x-3 whitespace-nowrap">
-                  <button onClick={() => startEdit(item)} className="focus-ring text-sm text-char-900 hover:underline">
+                  <button
+                    onClick={() => startEdit(item)}
+                    className="focus-ring text-sm text-char-900 hover:underline"
+                  >
                     Edit
                   </button>
-                  <button onClick={() => removeItem(item)} className="focus-ring text-sm text-brick-600 hover:underline">
+                  <button
+                    onClick={() => removeItem(item)}
+                    className="focus-ring text-sm text-brick-600 hover:underline"
+                  >
                     Delete
                   </button>
                 </td>
@@ -188,7 +197,10 @@ function MenuManager() {
             ))}
             {items.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-char-700/50">
+                <td
+                  colSpan={6}
+                  className="px-4 py-8 text-center text-char-700/50"
+                >
                   No menu items yet.
                 </td>
               </tr>
@@ -199,13 +211,21 @@ function MenuManager() {
 
       {showForm && (
         <div className="fixed inset-0 z-20 flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-char-900/40" onClick={() => setShowForm(false)} />
-          <form onSubmit={saveItem} className="relative bg-linen rounded-lg shadow-xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+          <div
+            className="absolute inset-0 bg-char-900/40"
+            onClick={() => setShowForm(false)}
+          />
+          <form
+            onSubmit={saveItem}
+            className="relative bg-linen rounded-lg shadow-xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+          >
             <h2 className="font-display text-xl text-char-900">
               {form.id ? "Edit item" : "New item"}
             </h2>
             <div>
-              <label className="block text-sm font-medium text-char-700/70 mb-1">Name</label>
+              <label className="block text-sm font-medium text-char-700/70 mb-1">
+                Name
+              </label>
               <input
                 required
                 value={form.name}
@@ -214,22 +234,29 @@ function MenuManager() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-char-700/70 mb-1">Description</label>
+              <label className="block text-sm font-medium text-char-700/70 mb-1">
+                Description
+              </label>
               <textarea
                 value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
                 rows={2}
                 className="focus-ring w-full rounded-lg border border-char-900/20 px-3 py-2 bg-white text-char-900"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-char-700/70 mb-1">
-                Photo URL or local path <span className="text-char-700/40 font-normal">(optional)</span>
+                Photo URL or local path{" "}
+                <span className="text-char-700/40 font-normal">(optional)</span>
               </label>
               <input
                 type="text"
                 value={form.image_url}
-                onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, image_url: e.target.value })
+                }
                 placeholder="https://…  or  /images/dish.jpg"
                 className="focus-ring w-full rounded-lg border border-char-900/20 px-3 py-2 bg-white text-char-900"
               />
@@ -246,7 +273,9 @@ function MenuManager() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-char-700/70 mb-1">Price</label>
+                <label className="block text-sm font-medium text-char-700/70 mb-1">
+                  Price
+                </label>
                 <input
                   required
                   type="number"
@@ -258,11 +287,15 @@ function MenuManager() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-char-700/70 mb-1">Category</label>
+                <label className="block text-sm font-medium text-char-700/70 mb-1">
+                  Category
+                </label>
                 <input
                   required
                   value={form.category}
-                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, category: e.target.value })
+                  }
                   className="focus-ring w-full rounded-lg border border-char-900/20 px-3 py-2 bg-white text-char-900"
                 />
               </div>
@@ -272,7 +305,9 @@ function MenuManager() {
                 <input
                   type="checkbox"
                   checked={form.is_available}
-                  onChange={(e) => setForm({ ...form, is_available: e.target.checked })}
+                  onChange={(e) =>
+                    setForm({ ...form, is_available: e.target.checked })
+                  }
                   className="accent-char-900"
                 />
                 Available to customers
@@ -281,14 +316,18 @@ function MenuManager() {
                 <input
                   type="checkbox"
                   checked={form.is_featured}
-                  onChange={(e) => setForm({ ...form, is_featured: e.target.checked })}
+                  onChange={(e) =>
+                    setForm({ ...form, is_featured: e.target.checked })
+                  }
                   className="accent-ember-500"
                 />
-                Mark as "Popular"
+                Mark as &quot;Popular&quot;
               </label>
             </div>
             <div>
-              <label className="block text-sm font-medium text-char-700/70 mb-1.5">Type</label>
+              <label className="block text-sm font-medium text-char-700/70 mb-1.5">
+                Type
+              </label>
               <div className="flex gap-2">
                 <button
                   type="button"
@@ -348,7 +387,10 @@ export default function ManagerMenuPage() {
           <DashboardHeader
             title="MeetPoint · Manager"
             user={user}
-            links={[{ href: "/manager", label: "Orders" }, { href: "/manager/menu", label: "Menu" }]}
+            links={[
+              { href: "/manager", label: "Orders" },
+              { href: "/manager/menu", label: "Menu" },
+            ]}
           />
           <MenuManager />
         </main>
